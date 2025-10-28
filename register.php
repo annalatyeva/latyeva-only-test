@@ -1,22 +1,14 @@
-
 <?php
   session_start();
+  require('utils.php');
   $onlysql = new mysqli("localhost", "root", "", "only");
   $onlysql->query("SET NAMES 'utf8'");
 
   $errors = array();
 
-  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['userlogin'])) {
+  if ($_SERVER['REQUEST_METHOD'] === "POST") {
     $userlogin = trim($_POST['userlogin']);
-
-    $tel = preg_replace('/[^0-9]/', '', trim($_POST['tel']));
-    if (strlen($tel) == 11 && $tel[0] == '8') {
-        $tel = '7' . substr($tel, 1);
-    }
-    if (strlen($tel) == 10) {
-        $phone = '7' . $phone;
-    }
-
+    $tel = normalizeTel($tel);
     $email = trim($_POST['email']);
     $password1 = trim($_POST['password']);
     $password2 = trim($_POST['password_confirm']);
@@ -47,6 +39,7 @@
       $password = password_hash($password1, PASSWORD_DEFAULT);
       $onlysql->query("INSERT INTO `only-users`(`userlogin`, `tel`, `email`, `password`) VALUES ('$userlogin','$tel','$email','$password')");
       header('Location: profile.php');
+      exit;
     }
   }
 ?>
