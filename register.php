@@ -4,11 +4,19 @@
   $onlysql = new mysqli("localhost", "root", "", "only");
   $onlysql->query("SET NAMES 'utf8'");
 
-  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $errors = array();
+  $errors = array();
 
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['userlogin'])) {
     $userlogin = trim($_POST['userlogin']);
-    $tel = trim($_POST['tel']);
+
+    $tel = preg_replace('/[^0-9]/', '', trim($_POST['tel']));
+    if (strlen($tel) == 11 && $tel[0] == '8') {
+        $tel = '7' . substr($tel, 1);
+    }
+    if (strlen($tel) == 10) {
+        $phone = '7' . $phone;
+    }
+
     $email = trim($_POST['email']);
     $password1 = trim($_POST['password']);
     $password2 = trim($_POST['password_confirm']);
@@ -21,7 +29,10 @@
     $result = $onlysql->query("SELECT `tel` FROM `only-users` WHERE `tel` = '$tel'");
     if ($result->num_rows > 0) {
       $errors['tel'] = 'Пользователь с таким номером телефона уже существует';
+    } else if (strlen($tel) != 11) {
+      $errors['tel'] = 'Введите корректный номер телефона';
     }
+
 
     $result = $onlysql->query("SELECT `email` FROM `only-users` WHERE `email` = '$email'");
     if ($result->num_rows > 0) {
