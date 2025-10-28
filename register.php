@@ -8,7 +8,7 @@
 
   if ($_SERVER['REQUEST_METHOD'] === "POST") {
     $userlogin = trim($_POST['userlogin']);
-    $tel = normalizeTel($tel);
+    $tel = normalizeTel($_POST['tel']);
     $email = trim($_POST['email']);
     $password1 = trim($_POST['password']);
     $password2 = trim($_POST['password_confirm']);
@@ -39,6 +39,9 @@
       $password = password_hash($password1, PASSWORD_DEFAULT);
       $onlysql->query("INSERT INTO `only-users`(`userlogin`, `tel`, `email`, `password`) VALUES ('$userlogin','$tel','$email','$password')");
       header('Location: profile.php');
+      $_SESSION['userlogin'] = $userlogin;
+      $_SESSION['tel'] = $tel;
+      $_SESSION['email'] = $email;
       exit;
     }
   }
